@@ -1,0 +1,46 @@
+mlflow:
+  log_dir: "logs/mlruns"
+  experiment_type: "binary_classification"
+
+model:
+  name: resnet18
+
+optimizer:
+  name: SGD
+  params:
+    lr: 0.001
+    weight_decay: 1.0e-4
+
+training:
+  n_epochs: 10
+  batch_size_train: 1024
+  batch_size_val: 256
+
+data:
+  train_path: data/train_img/
+  labels_file: data/label_train.txt
+  num_workers: 4
+
+loss_function:
+  type: BCEWithLogitsLoss  # Can be any loss function available in torch.nn
+  pos_weight: True          # Set to False if not using pos_weight
+  weight_factor: 10000        # Default scaling factor, can be adjusted
+  custom_weight_scale: 
+    use_custom: False         # Set to False if you want to use a fixed scale
+    factor: 2.0              # Multiplier for the calculated class weights
+  params: {}                 # Additional parameters for the loss function
+
+transforms:
+  train:
+    - RandomHorizontalFlip: {}
+    - ToTensor: {}
+    - Normalize: 
+        mean: [0.485, 0.456, 0.406]
+        std: [0.229, 0.224, 0.225]
+  val:
+    - ToTensor: {}
+    - Normalize: 
+        mean: [0.485, 0.456, 0.406]
+        std: [0.229, 0.224, 0.225]
+
+device: cuda

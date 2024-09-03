@@ -1,0 +1,45 @@
+mlflow:
+  log_dir: "logs/mlruns"
+  experiment_type: "binary_classification"
+
+model:
+  name: resnet18
+
+optimizer:
+  name: SGD
+  params:
+    lr: 0.0005
+    weight_decay: 1.0e-4
+
+training:
+  n_epochs: 90
+  batch_size_train: 1024
+  batch_size_val: 256
+
+data:
+  train_path: data/train_img/
+  labels_file: data/label_train.txt
+  num_workers: 4
+
+loss_function:
+  type: FocalLoss  # Change to FocalLoss
+  alpha: 0.25      # Alpha parameter for focal loss
+  gamma: 2.0       # Gamma parameter for focal loss
+  reduction: mean  # Reduction type, can be 'mean', 'sum', or 'none'
+  params: {}       # Additional parameters for the loss function (if any)
+
+
+transforms:
+  train:
+    - RandomHorizontalFlip: {}
+    - ToTensor: {}
+    - Normalize: 
+        mean: [0.485, 0.456, 0.406]
+        std: [0.229, 0.224, 0.225]
+  val:
+    - ToTensor: {}
+    - Normalize: 
+        mean: [0.485, 0.456, 0.406]
+        std: [0.229, 0.224, 0.225]
+
+device: cuda
