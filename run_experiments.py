@@ -13,10 +13,9 @@ def run_experiment(config_file):
 
 if __name__ == "__main__":
     configs = [
-        "configs/resnet_focal.yaml",
-        "configs/resnet_bce.yaml",
-        "configs/resnet_weighted_bce_sgd.yaml",
         "configs/resnet_weighted_bce_adam.yaml",
+        "configs/resnet_weighted_bce_sgd.yaml",
+        "configs/resnet_bce.yaml",
     ]
     n_runs = 5
 

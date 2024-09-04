@@ -8,13 +8,17 @@ model:
 optimizer:
   name: SGD
   params:
-    lr: 0.001
+    lr: 0.0005
     weight_decay: 1.0e-4
+    momentum: 0.9
 
 training:
-  n_epochs: 10
+  n_epochs: 50
   batch_size_train: 1024
   batch_size_val: 256
+  use_progressive_sampling: True
+  start_ratio: 0.1  # Starting ratio of minority to majority class samples
+  end_ratio: 0.5    # Ending ratio of minority to majority class samples
 
 data:
   train_path: data/train_img/
@@ -22,13 +26,12 @@ data:
   num_workers: 4
 
 loss_function:
-  type: BCEWithLogitsLoss  # Can be any loss function available in torch.nn
-  pos_weight: False          # Set to False if not using pos_weight
-  weight_factor: 1e5        # Default scaling factor, can be adjusted
+  type: BCEWithLogitsLoss
+  pos_weight: True          # Use pos_weight for BCEWithLogitsLoss
+  weight_factor: 10000        # Default scaling factor, can be adjusted
   custom_weight_scale: 
-    use_custom: True         # Set to False if you want to use a fixed scale
+    use_custom: False         # Set to True to use custom scaling
     factor: 2.0              # Multiplier for the calculated class weights
-  params: {}                 # Additional parameters for the loss function
 
 transforms:
   train:

@@ -51,20 +51,21 @@ def dynamic_transforms(transform_config):
     return transforms.Compose(transform_list)
 
 
-def load_data(config):
+def load_dataset(config):
     """
-    Load data from the given configuration.
+    Load the dataset based on the provided configuration.
 
     Parameters:
     - config (dict): A dictionary containing the necessary configuration settings.
 
     Returns:
-    - tuple: Returns training and validation dataloaders along with the training labels.
+    - tuple: Returns a tuple of training and validation datasets.
     """
+    # Load labels
     labels = np.loadtxt(config["data"]["labels_file"], dtype=int)
     image_paths = [os.path.join(config["data"]["train_path"], f"{i+1:06d}.jpg") for i in range(len(labels))]
 
-    # Split the data into training and validation sets in memory
+    # Split the data into training and validation sets
     train_paths, val_paths, train_labels, val_labels = train_test_split(image_paths, labels, test_size=0.2, stratify=labels)
 
     # Load transforms from config
@@ -75,13 +76,31 @@ def load_data(config):
     train_dataset = FaceDataset(train_paths, train_labels, transform=train_transform)
     val_dataset = FaceDataset(val_paths, val_labels, transform=val_transform)
 
-    # Create dataloaders
+    return train_dataset, val_dataset
+
+
+def create_dataloaders(config, train_dataset, val_dataset, sampler=None):
+    """
+    Load data from the given configuration and optionally use a custom sampler.
+
+    Parameters:
+    - config (dict): A dictionary containing the necessary configuration settings.
+    - sampler (torch.utils.data.Sampler, optional): A custom sampler to be used for the training dataloader.
+
+    Returns:
+    - tuple: Returns training and validation datasets.
+    """
+    # Create dataloaders with optional sampler
     train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=config["training"]["batch_size_train"], shuffle=True, num_workers=config["data"]["num_workers"]
+        train_dataset,
+        batch_size=config["training"]["batch_size_train"],
+        shuffle=(sampler is None),  # Only shuffle if no sampler is provided
+        sampler=sampler,  # Apply the custom sampler if provided
+        num_workers=config["data"]["num_workers"],
     )
 
     val_loader = torch.utils.data.DataLoader(
         val_dataset, batch_size=config["training"]["batch_size_val"], shuffle=False, num_workers=config["data"]["num_workers"]
     )
 
-    return train_loader, val_loader, train_labels
+    return train_loader, val_loader
