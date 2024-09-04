@@ -13,7 +13,7 @@ def set_mlflow_tracking_uri(logs_path):
 
 
 def load_model(run_id):
-    model_uri = f"runs:/{run_id}/best_model"
+    model_uri = f"runs:/{run_id}/final_model"
     return mlflow.pytorch.load_model(model_uri)
 
 
@@ -90,7 +90,14 @@ def main(run_ids, image_dir, output_file):
 
 
 if __name__ == "__main__":
-    RUN_IDS = ["7f6fb4cf3c664dec9831facf82a3938a"]
+    RUN_IDS = [
+        "0036d79d65be4888b1ecb67fc3a9b596",
+        "0068327584134e78884827c6ef5e78ff",
+        "d72f506efd3a4e6588e3f3d8e25cc60b",
+        "b4fd73ccddd54facbcd002e767a15800",
+        "4aef0f0f940048cdb8f3b30d46e0c097",
+        "7f6fb4cf3c664dec9831facf82a3938a",
+    ]
     IMAGE_DIR = "./data/val_img"
     OUTPUT_FILE = f"predictions/ensemble_predictions_resnet18_adam_wBCE.txt"
 
